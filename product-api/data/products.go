@@ -6,6 +6,8 @@ import (
 
 	"github.com/hashicorp/go-hclog"
 	protos "github.com/nicholasjackson/building-microservices-youtube/currency/protos/currency"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 )
 
 var baseCurrency = "EUR"
@@ -184,6 +186,11 @@ func (p *ProductsDB) GetProductByID(id int, currency string) (*Product, error) {
 	// convert the price to the destination currency
 	rate, err := p.getRate(currency)
 	if err != nil {
+		// get the GRPC error code
+		if grpc.Code(err) == codes.OutOfRange {
+			return nil, fmt.Errorf("Invalid currency, base currency and destination currency can not be the same")
+		}
+
 		return nil, err
 	}
 

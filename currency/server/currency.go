@@ -8,6 +8,8 @@ import (
 	"github.com/nicholasjackson/building-microservices-youtube/currency/data"
 	protos "github.com/nicholasjackson/building-microservices-youtube/currency/protos/currency"
 	"github.com/prometheus/common/log"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 )
 
 // Currency is a gRPC server it implements the methods defined by the CurrencyServer interface
@@ -57,6 +59,18 @@ func (c *Currency) handleRateChanges() {
 // for the two given currencies.
 func (c *Currency) GetRate(ctx context.Context, rr *protos.RateRequest) (*protos.RateResponse, error) {
 	c.log.Info("Handle request for GetRate", "base", rr.GetBase(), "dest", rr.GetDestination())
+
+	base := rr.GetBase().String()
+	destination := rr.GetDestination().String()
+
+	// if the base is the same as a destination return an error
+	if base == destination {
+		//2020-04-06T08:40:48.108+0100 [ERROR] Error fetching rate from currency server: error="rpc error: code = Unknown desc = Base currency EUR must be different from destination currency EUR"
+		//return nil, fmt.Errorf("Base currency %s must be different from destination currency %s", base, destination)
+
+		//2020-04-06T08:39:32.780+0100 [ERROR] Fetching product: error="rpc error: code = OutOfRange desc = Base currency EUR must be different from destination currency EUR"
+		return nil, grpc.Errorf(codes.OutOfRange, "Base currency %s must be different from destination currency %s", base, destination)
+	}
 
 	// get the rate
 	r, err := c.rates.GetRate(rr.GetBase().String(), rr.GetDestination().String())

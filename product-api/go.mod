@@ -20,6 +20,7 @@ require (
 	github.com/nicholasjackson/building-microservices-youtube/currency v0.0.0
 	github.com/nicholasjackson/env v0.6.0
 	github.com/stretchr/testify v1.4.0
+	github.com/vmihailenco/msgpack v4.0.4+incompatible
 	go.mongodb.org/mongo-driver v1.3.1 // indirect
 	golang.org/x/net v0.0.0-20200324143707-d3edc9973b7e // indirect
 	golang.org/x/sys v0.0.0-20200327173247-9dae0f8f5775 // indirect
